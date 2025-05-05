@@ -1,0 +1,140 @@
+<!--
+  Auteur   : LM-Code
+  Site     : https://lm-code.be
+  GitHub   : https://github.com/LM-Code-Be
+  Projet   : Project Manager (Flask + MySQL)
+-->
+
+{% extends 'base.html' %}
+{% block title %}Dashboard – Project Manager{% endblock %}
+
+{% block content %}
+<h1 class="fw-bold mb-4">Tableau de bord</h1>
+
+<!-- Cartes statistiques -->
+<div class="row g-4">
+  <div class="col-sm-6 col-lg-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <p class="text-muted mb-1">Projets</p>
+          <h3 class="fw-bold">{{ stats.projects }}</h3>
+        </div>
+        <div class="icon-circle bg-light text-primary">
+          <i class="fa-solid fa-diagram-project fs-5"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <p class="text-muted mb-1">Tâches</p>
+          <h3 class="fw-bold">{{ stats.tasks }}</h3>
+        </div>
+        <div class="icon-circle bg-light text-primary">
+          <i class="fa-solid fa-list-check fs-5"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <p class="text-muted mb-1">Utilisateurs</p>
+          <h3 class="fw-bold">{{ stats.users }}</h3>
+        </div>
+        <div class="icon-circle bg-light text-primary">
+          <i class="fa-solid fa-users fs-5"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-lg-3">
+    <div class="card shadow-sm border-0">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <p class="text-muted mb-1">Tâches en retard</p>
+          <h3 class="fw-bold text-danger">{{ stats.overdue }}</h3>
+        </div>
+        <div class="icon-circle bg-light text-danger">
+          <i class="fa-solid fa-clock fs-5"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Graphiques -->
+<div class="row mt-5 g-4">
+  <!-- Graphique par mois -->
+  <div class="col-md-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h5 class="mb-3 fw-semibold text-muted">Tâches créées par mois</h5>
+        <canvas id="monthlyChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graphique par statut -->
+  <div class="col-md-4">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h5 class="mb-3 fw-semibold text-muted">Répartition des statuts</h5>
+        <canvas id="statusChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+const monthlyCtx = document.getElementById("monthlyChart").getContext("2d");
+new Chart(monthlyCtx, {
+  type: "line",
+  data: {
+    labels: {{ chart_monthly.labels | tojson | safe }},
+    datasets: [{
+      label: "Tâches",
+      data: {{ chart_monthly.data | tojson | safe }},
+      borderColor: "#0d6efd",
+      backgroundColor: "rgba(13, 110, 253, 0.1)",
+      tension: 0.4,
+      fill: true,
+      pointBackgroundColor: "#0d6efd"
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+const statusCtx = document.getElementById("statusChart").getContext("2d");
+new Chart(statusCtx, {
+  type: "doughnut",
+  data: {
+    labels: {{ chart_status.labels | tojson | safe }},
+    datasets: [{
+      data: {{ chart_status.data | tojson | safe }},
+      backgroundColor: ["#0d6efd", "#ffc107", "#198754"]
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: "bottom" } }
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+<!--
+  Auteur   : LM-Code
+  Site     : https://lm-code.be
+  GitHub   : https://github.com/LM-Code-Be
+  Projet   : Project Manager (Flask + MySQL)
+-->
+
+{% extends 'base.html' %}
+{% block title %}Erreur 500 – Problème interne{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-3 text-danger">500</h1>
+  <p class="lead mb-4">Désolé, quelque chose s’est mal passé.</p>
+  <a href="{{ url_for('dashboard') }}" class="btn btn-primary"><i class="fa-solid fa-house me-2"></i>Retour au dashboard</a>
+</div>
+{% endblock %}

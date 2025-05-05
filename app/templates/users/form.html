@@ -1,0 +1,49 @@
+<!--
+  Auteur   : LM-Code
+  Site     : https://lm-code.be
+  GitHub   : https://github.com/LM-Code-Be
+  Projet   : Project Manager (Flask + MySQL)
+-->
+
+{% extends 'base.html' %}
+{% if user %}{% set page_title = 'Modifier l’utilisateur' %}{% else %}{% set page_title = 'Nouvel utilisateur' %}{% endif %}
+{% block title %}{{ page_title }} – Project Manager{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">{{ page_title }}</h1>
+
+<form method="post">
+  {{ form.hidden_tag() }}
+
+  <div class="mb-3">
+    {{ form.username.label(class="form-label") }}
+    {{ form.username(class="form-control", placeholder="Nom d’utilisateur") }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.email.label(class="form-label") }}
+    {{ form.email(class="form-control", placeholder="Adresse e‑mail") }}
+  </div>
+
+  {% if not user %}
+  <div class="row g-3">
+    <div class="col-md-6">
+      {{ form.password.label(class="form-label") }}
+      {{ form.password(class="form-control") }}
+    </div>
+    <div class="col-md-6">
+      {{ form.confirm.label(class="form-label") }}
+      {{ form.confirm(class="form-control") }}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="mt-3">
+    {{ form.role.label(class="form-label") }}
+    {{ form.role(class="form-select") }}
+  </div>
+
+  <button class="btn btn-primary mt-4"><i class="fa-solid fa-save me-2"></i>Enregistrer</button>
+  <a href="{{ url_for('users.list_users') }}" class="btn btn-outline-secondary mt-4">Annuler</a>
+</form>
+{% endblock %}

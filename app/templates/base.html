@@ -1,0 +1,98 @@
+
+<!--
+  Auteur   : LM-Code
+  Site     : https://lm-code.be
+  GitHub   : https://github.com/LM-Code-Be
+  Projet   : Project Manager (Flask + MySQL)
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Project Manager{% endblock %}</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <!-- DataTables -->
+  <link href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="bg-light d-flex flex-column min-vh-100">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="{{ url_for('dashboard.index') }}">
+        <i class="fa-solid fa-diagram-project me-2"></i>Project Manager
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        {% if current_user.is_authenticated %}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('projects.list_projects') }}">Projets</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('tasks.list_tasks') }}">Tâches</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('users.list_users') }}">Utilisateurs</a></li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fa-solid fa-user"></i> {{ current_user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Déconnexion</a></li>
+            </ul>
+          </li>
+        </ul>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="flex-fill">
+    <div class="container py-4">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-primary text-white text-center py-3 mt-auto shadow-sm">
+    <div class="container">
+      © {{ config.SITE_NAME }} – {{ current_year }}
+    </div>
+  </footer>
+
+  <!-- Core JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- DataTables -->
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+  {% block scripts_extra %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,81 @@
+/*
+  Auteur   : LM-Code
+  Site     : https://lm-code.be
+  GitHub   : https://github.com/LM-Code-Be
+  Projet   : Project Manager (Flask + MySQL)
+*/
+
+
+/* —— Couleurs & polices —— */
+:root {
+    --bs-primary: #2563eb;        /* indigo‑500 */
+    --bs-primary-rgb: 37, 99, 235;
+  }
+  
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  
+  /* —— Boutons & badges —— */
+  .btn,
+  .badge {
+    border-radius: 0.7rem;
+  }
+  
+  /* —— Cartes —— */
+  .card {
+    border-radius: 1.1rem;
+  }
+  .card-header.bg-primary {
+    border-top-left-radius: 1.1rem;
+    border-top-right-radius: 1.1rem;
+  }
+  
+  /* —— Table DataTables —— */
+  table.dataTable > tbody > tr > td {
+    vertical-align: middle;
+  }
+  
+  /* —— Formulaires —— */
+  .form-control,
+  .form-select {
+    border-radius: 0.6rem;
+  }
+  
+  .alert {
+    border-radius: 0.8rem;
+  }
+  
+  .card.kpi-card {
+    border-radius: 1.1rem;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .card.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  }
+  
+  .icon-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  canvas {
+    max-width: 100%;
+  }
+
+  .icon-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  

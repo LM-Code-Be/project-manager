@@ -4,137 +4,144 @@
   GitHub   : https://github.com/LM-Code-Be
   Projet   : Project Manager (Flask + MySQL)
 -->
-
 {% extends 'base.html' %}
 {% block title %}Dashboard – Project Manager{% endblock %}
 
 {% block content %}
 <h1 class="fw-bold mb-4">Tableau de bord</h1>
 
-<!-- Cartes statistiques -->
+<!-- Cartes KPI -->
 <div class="row g-4">
-  <div class="col-sm-6 col-lg-3">
+  {% set kpis = [
+    ("Projets",   stats.projects,  "fa-diagram-project", "primary"),
+    ("Tâches",    stats.tasks,     "fa-list-check",      "primary"),
+    ("En cours",  stats.progress,  "fa-spinner",         "warning"),
+    ("Terminées", stats.done,      "fa-check",           "success"),
+    ("Utilisateurs", stats.users,  "fa-users",           "primary"),
+    ("En retard", stats.overdue,   "fa-clock",           "danger")
+  ] %}
+  {% for label, value, icon, color in kpis %}
+  <div class="col-6 col-lg-2">
+    <div class="card shadow-sm border-0 text-center">
+      <div class="card-body">
+        <div class="icon-circle bg-light text-{{ color }} mb-2">
+          <i class="fa-solid {{ icon }}"></i>
+        </div>
+        <p class="mb-0 text-muted small">{{ label }}</p>
+        <h4 class="fw-bold">{{ value }}</h4>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Graphiques -->
+<div class="row mt-5 g-4">
+  <!-- Créées par mois -->
+  <div class="col-lg-6">
     <div class="card shadow-sm border-0">
-      <div class="card-body d-flex justify-content-between align-items-center">
-        <div>
-          <p class="text-muted mb-1">Projets</p>
-          <h3 class="fw-bold">{{ stats.projects }}</h3>
-        </div>
-        <div class="icon-circle bg-light text-primary">
-          <i class="fa-solid fa-diagram-project fs-5"></i>
-        </div>
+      <div class="card-body">
+        <h5 class="mb-3 fw-semibold text-muted">Tâches créées par mois</h5>
+        <canvas id="monthlyChart" height="200"></canvas>
       </div>
     </div>
   </div>
 
-  <div class="col-sm-6 col-lg-3">
+  <!-- Par statut -->
+  <div class="col-lg-3">
     <div class="card shadow-sm border-0">
-      <div class="card-body d-flex justify-content-between align-items-center">
-        <div>
-          <p class="text-muted mb-1">Tâches</p>
-          <h3 class="fw-bold">{{ stats.tasks }}</h3>
-        </div>
-        <div class="icon-circle bg-light text-primary">
-          <i class="fa-solid fa-list-check fs-5"></i>
-        </div>
+      <div class="card-body">
+        <h5 class="mb-3 fw-semibold text-muted">Par statut</h5>
+        <canvas id="statusChart" height="200"></canvas>
       </div>
     </div>
   </div>
 
-  <div class="col-sm-6 col-lg-3">
+  <!-- Par utilisateur -->
+  <div class="col-lg-3">
     <div class="card shadow-sm border-0">
-      <div class="card-body d-flex justify-content-between align-items-center">
-        <div>
-          <p class="text-muted mb-1">Utilisateurs</p>
-          <h3 class="fw-bold">{{ stats.users }}</h3>
-        </div>
-        <div class="icon-circle bg-light text-primary">
-          <i class="fa-solid fa-users fs-5"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-sm-6 col-lg-3">
-    <div class="card shadow-sm border-0">
-      <div class="card-body d-flex justify-content-between align-items-center">
-        <div>
-          <p class="text-muted mb-1">Tâches en retard</p>
-          <h3 class="fw-bold text-danger">{{ stats.overdue }}</h3>
-        </div>
-        <div class="icon-circle bg-light text-danger">
-          <i class="fa-solid fa-clock fs-5"></i>
-        </div>
+      <div class="card-body">
+        <h5 class="mb-3 fw-semibold text-muted">Par utilisateur</h5>
+        <canvas id="userChart" height="200"></canvas>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Graphiques -->
-<div class="row mt-5 g-4">
-  <!-- Graphique par mois -->
-  <div class="col-md-8">
-    <div class="card shadow-sm border-0">
-      <div class="card-body">
-        <h5 class="mb-3 fw-semibold text-muted">Tâches créées par mois</h5>
-        <canvas id="monthlyChart" height="120"></canvas>
-      </div>
+<!-- 5 prochaines tâches -->
+<div class="card shadow-sm border-0 mt-4">
+  <div class="card-body">
+    <h5 class="mb-3 fw-semibold text-muted">Prochaines tâches à échéance</h5>
+    {% if upcoming %}
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Titre</th>
+            <th>Projet</th>
+            <th>Statut</th>
+            <th>Échéance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in upcoming %}
+          <tr>
+            <td>{{ t.title }}</td>
+            <td>{{ t.project.name if t.project else "-" }}</td>
+            <td>{{ t.get_status_display() }}</td>
+            <td>{{ t.due_date.strftime("%d/%m/%Y") if t.due_date else "-" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-  </div>
-
-  <!-- Graphique par statut -->
-  <div class="col-md-4">
-    <div class="card shadow-sm border-0">
-      <div class="card-body">
-        <h5 class="mb-3 fw-semibold text-muted">Répartition des statuts</h5>
-        <canvas id="statusChart" height="200"></canvas>
-      </div>
-    </div>
+    {% else %}
+      <p class="text-muted">Aucune échéance imminente 🎉</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
 
 {% block scripts_extra %}
 <script>
-const monthlyCtx = document.getElementById("monthlyChart").getContext("2d");
-new Chart(monthlyCtx, {
-  type: "line",
-  data: {
-    labels: {{ chart_monthly.labels | tojson | safe }},
-    datasets: [{
-      label: "Tâches",
-      data: {{ chart_monthly.data | tojson | safe }},
-      borderColor: "#0d6efd",
-      backgroundColor: "rgba(13, 110, 253, 0.1)",
-      tension: 0.4,
-      fill: true,
-      pointBackgroundColor: "#0d6efd"
+/* Ligne mensuelle */
+new Chart(document.getElementById('monthlyChart').getContext('2d'),{
+  type:'line',
+  data:{
+    labels: {{ chart_monthly.labels|tojson|safe }},
+    datasets:[{
+      label:'Tâches',
+      data: {{ chart_monthly.data|tojson|safe }},
+      borderColor:'#0d6efd',
+      backgroundColor:'rgba(13,110,253,.1)',
+      tension:.4, fill:true, pointBackgroundColor:'#0d6efd'
     }]
   },
-  options: {
-    responsive: true,
-    plugins: { legend: { display: false } },
-    scales: {
-      y: { beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" } },
-      x: { grid: { display: false } }
-    }
+  options:{
+    plugins:{legend:{display:false}},
+    scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}
   }
 });
-
-const statusCtx = document.getElementById("statusChart").getContext("2d");
-new Chart(statusCtx, {
-  type: "doughnut",
-  data: {
-    labels: {{ chart_status.labels | tojson | safe }},
-    datasets: [{
-      data: {{ chart_status.data | tojson | safe }},
-      backgroundColor: ["#0d6efd", "#ffc107", "#198754"]
-    }]
+/* Doughnut par statut */
+new Chart(document.getElementById('statusChart').getContext('2d'),{
+  type:'doughnut',
+  data:{
+    labels: {{ chart_status.labels|tojson|safe }},
+    datasets:[{data: {{ chart_status.data|tojson|safe }},
+      backgroundColor:['#0d6efd','#ffc107','#198754']}]
   },
-  options: {
-    responsive: true,
-    plugins: { legend: { position: "bottom" } }
-  }
+  options:{plugins:{legend:{position:'bottom'}}}
+});
+/* Doughnut par utilisateur */
+new Chart(document.getElementById('userChart').getContext('2d'),{
+  type:'doughnut',
+  data:{
+    labels: {{ chart_user.labels|tojson|safe }},
+    datasets:[{data: {{ chart_user.data|tojson|safe }},
+      backgroundColor:['#0d6efd','#6610f2','#6f42c1','#dc3545','#198754',
+                       '#ffc107','#20c997','#0dcaf0','#fd7e14']}]
+  },
+  options:{plugins:{legend:{position:'bottom'}}}
 });
 </script>
 {% endblock %}
